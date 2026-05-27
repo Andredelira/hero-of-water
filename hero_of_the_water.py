@@ -4005,7 +4005,7 @@ def phase_select_screen():
 def phase_complete_screen(phase_num, phase_name, message, score, stars_earned, time_taken, ods_fact=None):
     """Tela de conclusão de fase com animação de estrelas e pontuação."""
     btn_next = Button(SCREEN_W // 2 - 120, 500, 240, 55, "PRÓXIMA FASE", GREEN_BTN, GREEN_BTN_H, font=font_med)
-    if phase_num >= 5:
+    if phase_num >= 4:
         btn_next.text = "VITÓRIA!"
     frame = 0
     star_anim = [0, 0, 0]
@@ -5800,7 +5800,7 @@ def main():
                     if phase_idx == 3:
                         # Última fase — tela de vitória
                         victory_screen()
-                        state = "title"
+                        state = "select"
                     else:
                         state = "select"
 
