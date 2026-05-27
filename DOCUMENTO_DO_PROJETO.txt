@@ -1,0 +1,348 @@
+================================================================
+  HERO OF THE WATER v2.0 — Documento do Projeto
+  Documento de continuidade para o desenvolvedor
+================================================================
+
+
+1. VISAO GERAL
+================================================================
+
+Nome: Hero of the Water
+Versao: 2.0
+Linguagem: Python 3.12+ com Pygame 2.6+
+Arquivo principal: hero_of_the_water.py (arquivo unico)
+Tema: ODS 6 — Agua Limpa e Saneamento
+Contexto: Projeto da faculdade de Analise de Sistemas
+
+Equipe: Filipe Henry, Andre de Lira, Julio Sergio,
+        Joao Victor, Edmilson Neto
+
+
+2. COMO RODAR
+================================================================
+
+Requisitos:
+  - Python 3.12 ou superior
+  - Pygame 2.6 ou superior
+
+Instalar Pygame:
+  pip install pygame
+
+Rodar:
+  python hero_of_the_water.py
+
+O jogo abre em TELA CHEIA. ESC para sair.
+
+
+3. ESTRUTURA DO CODIGO
+================================================================
+
+O jogo esta todo em um arquivo. Aqui esta o mapa de cada secao:
+
+LINHA   | SECAO                    | O QUE FAZ
+--------|--------------------------|----------------------------------
+1-15    | Imports e docstring      | Bibliotecas usadas
+16-25   | Inicializacao            | Pygame, tela, clock
+27-110  | Cores                    | Todas as cores do jogo (RGB)
+112-120 | Fontes                   | Tamanhos de texto
+122-155 | GameState                | Controle de fases e estrelas
+157-195 | Button                   | Botoes clicaveis (mouse)
+197-560 | Funcoes de desenho       | Toda a arte do jogo (procedural)
+562-680 | Backgrounds              | Cenarios das 5 fases
+682-720 | HUD                      | Interface durante o jogo
+722-790 | Player (Samuel)          | Classe do personagem jogavel
+792-810 | Particle                 | Efeitos visuais (brilhos)
+812-910 | Tela Titulo              | Menu principal
+912-960 | Tela Instrucoes          | Controles e regras
+962-1090| Selecao de Fases         | 5 cards, cadeados, estrelas
+1092-1160| Tela Conclusao          | Missao concluida + estrelas
+1162-1210| Game Over               | Missao falha
+1212-1280| Tela Vitoria            | Venceu o jogo inteiro
+1282-1320| Tutorial popup          | Popup generico de instrucao
+1322-1340| calc_stars              | Calculo de estrelas por fase
+1342-1530| FASE 1                  | Canal do Recife (coleta de lixo)
+1532-1670| FASE 2                  | Bairro Precario (consertar canos)
+1672-1850| FASE 3                  | Agua para Todos (maquina + NPCs)
+1852-2020| FASE 4                  | Estacao de Tratamento (puzzles)
+2022-2220| FASE 5                  | A Grande Missao (tudo junto)
+2222-2280| Main loop               | Controla fluxo entre telas
+
+
+4. ARQUITETURA DO JOGO
+================================================================
+
+4.1 FLUXO DE TELAS:
+
+  TITULO --> INSTRUCOES (opcional)
+    |
+    v
+  SELECAO DE FASES
+    |
+    v
+  FASE (1 a 5)
+    |
+    +--> VITORIA DA FASE --> TELA CONCLUSAO --> volta pra SELECAO
+    |
+    +--> MORTE --> GAME OVER (reseta tudo) --> volta pro TITULO
+
+
+4.2 CLASSES PRINCIPAIS:
+
+  GameState
+    - unlocked: lista de 5 booleans (quais fases estao abertas)
+    - stars: lista de 5 inteiros (0-3 estrelas por fase)
+    - reset(): volta tudo pro estado inicial
+    - complete_phase(idx, stars): desbloqueia proxima fase
+    - total_stars(): soma de todas as estrelas
+    - progress(): percentual de conclusao
+
+  Player (Samuel)
+    - x, y: posicao na tela
+    - vy: velocidade vertical (gravidade/pulo)
+    - lives: vidas (coracoes)
+    - water: barra de agua
+    - carrying: se esta carregando galao (fase 3 e 5)
+    - speed: velocidade de movimento
+    - update(keys, ground_y): atualiza posicao
+    - draw(surface): desenha na tela
+    - rect(): retorna hitbox pra colisao
+    - hit(): toma dano (com invencibilidade temporaria)
+
+  Button
+    - Botao clicavel com mouse
+    - Suporta hover (muda cor quando passa o mouse)
+    - Metodos: update(mouse), draw(surface), clicked(event)
+
+  Particle
+    - Efeito visual temporario (brilho, explosao)
+    - Desaparece sozinha apos 'life' frames
+
+
+4.3 SISTEMA DE ESTRELAS:
+
+  Cada fase da 1 a 3 estrelas baseado em:
+    - Tempo de conclusao
+    - Eficiencia (% de acerto)
+
+  Funcao calc_stars(time_taken, target_fast, target_ok, efficiency):
+    3 estrelas: eficiencia >= 90% E tempo < target_fast
+    2 estrelas: eficiencia >= 70% E tempo < target_ok
+    1 estrela: completou a fase
+
+  Se o jogador MORRE (vidas = 0):
+    - GameState.reset() e chamado
+    - TODAS as fases voltam a ficar bloqueadas
+    - TODAS as estrelas sao zeradas
+    - Jogador volta pro menu principal
+
+
+5. AS 5 FASES — MECANICAS
+================================================================
+
+FASE 1 — CANAL DO RECIFE
+  Funcao: run_phase_1()
+  Cenario: Canal com agua, cidade ao fundo, farol
+  Objetivo: Coletar 15 lixos (garrafas, latas, pneus, sacolas, caixas)
+  Mecanica:
+    - Samuel anda pela margem do canal
+    - Pressiona E perto do lixo pra coletar
+    - Pocas de poluicao causam dano
+    - Gotas de agua restauram energia
+  Colisao: hitbox retangular (player.rect vs lixo["rect"])
+  Vitoria: coletar todos os 15 lixos
+  Tempo alvo: 45s (3 estrelas), 75s (2 estrelas)
+
+FASE 2 — BAIRRO PRECARIO
+  Funcao: run_phase_2()
+  Cenario: Bairro noturno com predios, calcadas rachadas
+  Objetivo: Consertar 6 canos vazando
+  Mecanica:
+    - Samuel anda pelo bairro
+    - SEGURA E perto do cano pra consertar (barra de progresso)
+    - Jatos de agua causam dano se encostar sem consertar
+    - Gotas de agua restauram energia
+  Vitoria: consertar todos os 6 canos
+  Tempo alvo: 60s (3 estrelas), 100s (2 estrelas)
+
+FASE 3 — AGUA PARA TODOS
+  Funcao: run_phase_3()
+  Cenario: Area periferica com morros, casas, vegetacao
+  Objetivo: Entregar agua para 6 moradores (NPCs)
+  Mecanica:
+    - Maquina de purificacao no centro do mapa
+    - Samuel vai ate a maquina e SEGURA E pra encher galao
+    - Com galao cheio, vai ate um NPC e pressiona E pra entregar
+    - Cada galao serve 1 NPC
+    - NPCs mudam de triste pra feliz quando recebem agua
+  Vitoria: todos os 6 NPCs abastecidos
+  Tempo alvo: 60s (3 estrelas), 100s (2 estrelas)
+
+FASE 4 — ESTACAO DE TRATAMENTO
+  Funcao: run_phase_4()
+  Cenario: Interior industrial com tanques, tubulacoes
+  Objetivo: Processar 5 lotes de agua na sequencia correta
+  Mecanica (PUZZLE):
+    - 4 estacoes no cenario: FILTRAR, TRATAR, DESINFETAR, LIBERAR
+    - Samuel deve ir ate cada uma na ORDEM CORRETA e pressionar E
+    - Sequencia: 1 > 2 > 3 > 4 (sempre a mesma)
+    - Apertar na estacao errada = perde vida
+    - Repetir 5 vezes (5 lotes de agua)
+    - Indicador visual mostra qual e a proxima estacao
+  Vitoria: 5 lotes processados corretamente
+  Tempo alvo: 50s (3 estrelas), 80s (2 estrelas)
+
+FASE 5 — A GRANDE MISSAO
+  Funcao: run_phase_5()
+  Cenario: Cidade ampla com skyline, rio, areas diversas
+  Objetivo: Completar TODAS as tarefas simultaneamente
+  Mecanica (COMBINADA):
+    - 6 lixos pra coletar (Fase 1)
+    - 3 canos pra consertar (Fase 2)
+    - 4 NPCs pra abastecer com maquina (Fase 3)
+    - Total: 13 objetivos
+    - Barra de mini-objetivos no topo mostra progresso de cada tipo
+  Vitoria: todos os 13 objetivos completos
+  Tempo alvo: 90s (3 estrelas), 150s (2 estrelas)
+
+
+6. ARTE PROCEDURAL — COMO FUNCIONA
+================================================================
+
+O jogo NAO usa arquivos de imagem. Tudo e desenhado com codigo.
+
+Funcoes principais de desenho:
+
+  draw_samuel()              - Personagem (afro, colete, capa, tenis)
+  draw_heart()               - Coracao (vida)
+  draw_star() / draw_star_big() - Estrela (pontuacao)
+  draw_cloud()               - Nuvem
+  draw_tree()                - Arvore (2 variantes)
+  draw_water_bar()           - Barra de agua (HUD)
+  draw_lixo()                - 5 tipos de lixo
+  draw_pipe_segment()        - Cano (inteiro ou quebrado, com progresso)
+  draw_house()               - Casa (4 variantes de cor)
+  draw_npc()                 - Morador (4 variantes, triste/feliz)
+  draw_purification_machine() - Maquina de purificacao de agua
+  draw_treatment_station()   - Estacao de tratamento (fase 4)
+
+Backgrounds (um por fase):
+
+  draw_bg_river()        - Fase 1 (canal, cidade, farol)
+  draw_bg_neighborhood() - Fase 2 (bairro noturno, predios)
+  draw_bg_community()    - Fase 3 (area periferica, morros)
+  draw_bg_treatment()    - Fase 4 (interior industrial)
+  draw_bg_city()         - Fase 5 (cidade ampla)
+
+Pra alterar qualquer visual, basta mudar as coordenadas e cores
+dentro dessas funcoes. Todas usam pygame.draw (rect, circle,
+ellipse, polygon, line, arc).
+
+
+7. MODO TESTE
+================================================================
+
+Pra testar o jogo sem precisar vencer cada fase:
+
+No codigo, procure a linha (dentro de GameState.reset):
+  TEST_MODE = False
+
+Mude pra:
+  TEST_MODE = True
+
+Isso desbloqueia todas as 5 fases na tela de selecao.
+
+Alem disso, durante qualquer fase:
+  Tecla P = pular a fase (vence com 3 estrelas automaticamente)
+
+IMPORTANTE: Lembrar de voltar TEST_MODE = False antes de
+apresentar pro professor!
+
+
+8. CONTROLES
+================================================================
+
+  MENU:
+    Mouse .......... clicar nos botoes
+    Enter .......... alternativa ao clique
+    ESC ............ voltar / sair
+
+  GAMEPLAY:
+    Setas / WASD ... mover Samuel
+    Espaco / W ..... pular
+    E .............. interagir (coletar, consertar, encher, entregar)
+    ESC ............ voltar pra selecao de fases
+    P .............. pular fase (so no modo teste)
+
+
+9. O QUE PODE SER MELHORADO (ideias)
+================================================================
+
+Dificuldade:
+  [ ] Ajustar tempos alvo pra estrelas
+  [ ] Ajustar velocidade de conserto dos canos
+  [ ] Ajustar dano dos obstaculos
+  [ ] Adicionar dificuldade progressiva (mais lixo, menos tempo)
+
+Visual:
+  [ ] Adicionar mais detalhes nos cenarios
+  [ ] Animar a agua com mais ondas
+  [ ] Adicionar animacao de caminhada mais suave pro Samuel
+  [ ] Criar sprites pixel art em arquivo externo (PNG)
+  [ ] Adicionar parallax scrolling nos backgrounds
+
+Audio:
+  [ ] Adicionar musica de fundo (pygame.mixer.music)
+  [ ] Efeitos sonoros: coleta, dano, vitoria, derrota
+  [ ] Som de agua na tela titulo
+
+Gameplay:
+  [ ] Adicionar inimigos moveis (ratos, poluicao animada)
+  [ ] Power-ups (escudo, velocidade, cura)
+  [ ] Ranking local (salvar melhor pontuacao em arquivo)
+  [ ] Salvar progresso em arquivo (nao perder ao fechar)
+  [ ] Mais fases
+  [ ] Modo multiplayer local (2 jogadores)
+
+Apresentacao:
+  [ ] Tela de creditos mais elaborada
+  [ ] Cutscenes entre fases (historia animada)
+  [ ] Quiz sobre ODS 6 apos cada fase
+
+
+10. CONEXAO COM A ODS 6
+================================================================
+
+Cada fase representa um aspecto real da ODS 6:
+
+  Fase 1 (Limpeza)     -> Despoluicao de rios e canais
+  Fase 2 (Vazamentos)  -> Infraestrutura hidrica precaria
+  Fase 3 (Distribuicao)-> Acesso a agua potavel
+  Fase 4 (Tratamento)  -> Processo de tratamento de agua
+  Fase 5 (Tudo junto)  -> Solucao integrada e sustentavel
+
+Dados reais mencionados na tela de instrucoes:
+  - 2,2 bilhoes sem agua potavel no mundo
+  - 35 milhoes sem agua tratada no Brasil
+  - Saneamento previne 80% das doencas hidricas
+  - Recife: bairros da periferia sofrem com rodizio
+
+
+11. TERMOS TECNICOS (pra apresentacao)
+================================================================
+
+  Pygame ................. Biblioteca Python para jogos 2D
+  Arte procedural ........ Graficos gerados por codigo, sem imagens
+  Game loop .............. Ciclo ler-input > atualizar > desenhar (60 FPS)
+  Hitbox ................. Retangulo invisivel usado pra detectar colisao
+  colliderect() .......... Metodo do Pygame que checa sobreposicao
+  State machine .......... Maquina de estados que controla fluxo de telas
+  POO .................... Programacao Orientada a Objetos (classes)
+  Gravidade simulada ..... Velocidade vertical incrementada a cada frame
+  Particle system ........ Sistema de particulas pra efeitos visuais
+  Parallax ............... Camadas de fundo movendo em velocidades diferentes
+
+
+================================================================
+  FIM DO DOCUMENTO
+  Ultima atualizacao: 30/03/2026
+================================================================

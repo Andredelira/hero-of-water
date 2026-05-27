@@ -1,0 +1,306 @@
+================================================================
+  HERO OF THE WATER — Explicacao do Codigo
+  (pra entender e saber responder o professor)
+================================================================
+
+O jogo esta todo num arquivo so: hero_of_the_water.py
+Usa Python + Pygame (biblioteca pra criar jogos 2D).
+
+Vou explicar bloco por bloco, em linguagem simples.
+
+
+================================================================
+  1. ESTRUTURA GERAL — "Como o jogo e organizado?"
+================================================================
+
+O codigo e dividido em 7 blocos:
+
+  BLOCO                   | O QUE FAZ
+  ----------------------- | ----------------------------------
+  Inicializacao           | Liga o Pygame, cria a janela
+  Cores e Fontes          | Define as cores e tamanhos de texto
+  Funcoes de Desenho      | Desenha personagem, cenarios, itens
+  Classes (objetos)       | Define os "personagens" do jogo
+  Interface (UI)          | Barra de vida, agua, estrelas
+  Fases (1, 2, 3)         | A logica de cada fase
+  Game Loop               | Controla o fluxo: titulo > fases > fim
+
+Pense assim: o jogo e como um filme.
+- As FUNCOES DE DESENHO sao os cenarios e figurinos
+- As CLASSES sao os atores
+- As FASES sao as cenas
+- O GAME LOOP e o diretor que decide a ordem
+
+
+================================================================
+  2. INICIALIZACAO — "Como o jogo comeca?"
+================================================================
+
+  pygame.init()          --> Liga o motor do jogo
+  screen = pygame.display.set_mode((960, 640))  --> Cria a janela
+  clock = pygame.time.Clock()   --> Controla a velocidade (60 FPS)
+
+FPS = Frames Per Second (quadros por segundo).
+60 FPS significa que a tela atualiza 60 vezes por segundo.
+E por isso que o jogo parece fluido, como um video.
+
+
+================================================================
+  3. CORES — "Por que tem tantos numeros?"
+================================================================
+
+Cores no computador sao feitas de 3 valores: (R, G, B)
+R = Vermelho, G = Verde, B = Azul
+Cada valor vai de 0 a 255.
+
+Exemplos:
+  (255, 0, 0)     = vermelho puro
+  (0, 0, 255)     = azul puro
+  (255, 255, 255) = branco
+  (0, 0, 0)       = preto
+  (135, 206, 235) = azul ceu
+
+O jogo define varias cores com nomes legíveis:
+  SKY_BLUE = (135, 206, 235)   --> azul do ceu
+  WATER_BLUE = (64, 164, 223)  --> azul da agua
+  GRASS_GREEN = (76, 153, 0)   --> verde da grama
+
+
+================================================================
+  4. FUNCOES DE DESENHO — "Como ele desenha sem imagens?"
+================================================================
+
+O jogo NAO usa arquivos de imagem (PNG, JPG).
+Tudo e desenhado na hora com formas geometricas:
+
+  pygame.draw.rect()     --> Desenha retangulo (caixas, chao)
+  pygame.draw.circle()   --> Desenha circulo (gotas, brilho)
+  pygame.draw.ellipse()  --> Desenha oval (nuvens, copa de arvore)
+  pygame.draw.polygon()  --> Desenha forma livre (capa do Samuel)
+  pygame.draw.line()     --> Desenha linha (ondas, rachaduras)
+
+Exemplo simples — desenhar o Samuel:
+  - Cabeca = retangulo cor de pele
+  - Cabelo = varios retangulos escuros em formato redondo
+  - Capa = poligono vermelho (triangulo)
+  - Tenis = retangulo vermelho + detalhe branco
+
+Isso se chama "arte procedural" — o computador GERA a arte.
+Vantagem: nao precisa de arquivos externos.
+
+
+================================================================
+  5. CLASSES — "O que sao essas 'class'?"
+================================================================
+
+Classe e um MODELO pra criar objetos. Pense como uma ficha:
+
+  class Samuel:
+      - Posicao (x, y)      --> Onde ele esta na tela
+      - Velocidade (speed)   --> Quao rapido anda
+      - Vidas (lives)        --> Quantos coracoes tem
+      - Agua (water)         --> Barra de agua (energia)
+      - Estrelas (stars)     --> Pontuacao
+
+      - update()  --> Atualiza posicao (movimentacao, gravidade)
+      - draw()    --> Desenha na tela
+      - get_rect() --> Retorna a "caixa" dele (pra detectar colisao)
+
+Outras classes do jogo:
+
+  Lixo       --> Garrafas, latas, pneus no rio (Fase 1)
+  Pipe       --> Canos quebrados (Fase 2)
+  House      --> Casas que precisam de agua (Fase 3)
+  WaterDrop  --> Gotas coletaveis (bonus em todas as fases)
+  Obstacle   --> Pocas de poluicao (causam dano)
+  Particle   --> Efeitos visuais (brilhos quando coleta algo)
+
+Cada classe segue o mesmo padrao:
+  - Tem DADOS (posicao, estado)
+  - Tem ACOES (update, draw, get_rect)
+
+Isso e PROGRAMACAO ORIENTADA A OBJETOS (POO).
+O professor VAI gostar de ouvir esse termo.
+
+
+================================================================
+  6. COLISAO — "Como o jogo sabe que encostei em algo?"
+================================================================
+
+Cada objeto tem um "retangulo invisivel" (hitbox):
+
+  samuel.get_rect()  --> Retangulo em volta do Samuel
+  lixo.get_rect()    --> Retangulo em volta do lixo
+
+Pra saber se dois objetos se tocaram:
+
+  if samuel.get_rect().colliderect(lixo.get_rect()):
+      # Samuel encostou no lixo!
+
+Isso se chama DETECCAO DE COLISAO.
+O Pygame faz isso automatico com o metodo .colliderect()
+
+
+================================================================
+  7. GRAVIDADE E PULO — "Como funciona o pulo?"
+================================================================
+
+O Samuel tem velocidade vertical (vy):
+
+  Quando pula:   vy = -12  (negativo = pra cima)
+  A cada frame:  vy += 0.6 (gravidade puxa pra baixo)
+  Quando chega no chao: vy = 0 (para)
+
+Na pratica:
+  Frame 1: Samuel sobe rapido (vy = -12)
+  Frame 2: Sobe menos (vy = -11.4)
+  ...
+  Frame 20: Comeca a cair (vy vira positivo)
+  Frame 40: Chega no chao (vy = 0)
+
+Isso simula a fisica real. E o mesmo principio de qualquer jogo
+de plataforma (Mario, Sonic, etc).
+
+
+================================================================
+  8. GAME LOOP — "Como o jogo roda sem parar?"
+================================================================
+
+Todo jogo tem um "loop" (repeticao infinita):
+
+  while True:
+      1. Ler o que o jogador fez (teclado)
+      2. Atualizar posicoes e logica
+      3. Desenhar tudo na tela
+      4. Esperar 1/60 de segundo (60 FPS)
+      5. Voltar pro passo 1
+
+Esse ciclo se repete 60 vezes por segundo.
+E por isso que voce ve movimento — como um flipbook.
+
+O jogo usa ESTADOS pra saber o que mostrar:
+  "title"    --> Tela de titulo
+  "phase1"   --> Fase 1 (rio)
+  "ods1"     --> Fato sobre ODS 6
+  "phase2"   --> Fase 2 (canos)
+  "ods2"     --> Outro fato sobre ODS 6
+  "phase3"   --> Fase 3 (casas)
+  "victory"  --> Tela de vitoria
+  "gameover" --> Tela de derrota
+
+
+================================================================
+  9. CADA FASE — "O que acontece em cada uma?"
+================================================================
+
+FASE 1 — LIMPAR O RIO
+  - 12 lixos flutuando no rio
+  - Samuel anda pela margem
+  - Aperta E perto do lixo pra coletar
+  - Pocas de poluicao causam dano
+  - Gotas de agua restauram energia
+  - Vence quando coleta todos os 12
+
+FASE 2 — CONSERTAR VAZAMENTOS
+  - 5 canos quebrados pela cidade
+  - Samuel SEGURA E perto do cano
+  - Barra de progresso mostra o conserto
+  - Jatos de agua causam dano se encostar sem consertar
+  - Vence quando conserta todos os 5
+
+FASE 3 — DISTRIBUIR AGUA
+  - 6 casas sem agua
+  - Samuel comeca com barra de agua cheia
+  - Aperta E perto da casa = entrega agua (gasta 15 da barra)
+  - Precisa coletar gotas pra reabastecer
+  - Vence quando todas as 6 casas tem agua
+
+
+================================================================
+  10. CONEXAO COM A ODS 6 — "Onde entra a ODS?"
+================================================================
+
+A ODS 6 esta presente em TRES niveis:
+
+  1. GAMEPLAY (jogando)
+     - Limpar poluicao, consertar infraestrutura, distribuir agua
+     - Sao os 3 pilares da ODS 6 na pratica
+
+  2. INFORMACAO (entre fases)
+     - Telas com fatos reais:
+       "2,2 bilhoes nao tem agua potavel"
+       "35 milhoes de brasileiros sem agua tratada"
+       "Saneamento previne 80% das doencas"
+
+  3. CONTEXTO (historia)
+     - Ambientado em Recife
+     - Problema real: bairros da periferia com falta d'agua
+     - O jogador vivencia o problema e aprende solucoes
+
+
+================================================================
+  11. TERMOS TECNICOS PRA USAR NA APRESENTACAO
+================================================================
+
+Se o professor perguntar, use esses termos:
+
+  - "Usamos Pygame, uma biblioteca Python pra jogos 2D"
+  - "O personagem e desenhado com arte procedural"
+  - "Usamos programacao orientada a objetos (classes)"
+  - "O jogo tem deteccao de colisao via hitbox (retangulos)"
+  - "A fisica do pulo usa simulacao de gravidade"
+  - "O game loop roda a 60 FPS"
+  - "Os estados do jogo controlam o fluxo entre fases"
+  - "A conexao com a ODS 6 esta na gameplay e nos fatos entre fases"
+
+
+================================================================
+  12. PERGUNTAS QUE O PROFESSOR PODE FAZER
+================================================================
+
+P: "Por que Python e nao outra linguagem?"
+R: Python e a linguagem mais acessivel pra iniciantes e o Pygame
+   facilita muito a criacao de jogos 2D. E tambem a linguagem
+   que estamos aprendendo no curso.
+
+P: "Por que nao usaram imagens prontas?"
+R: Usamos arte procedural — tudo e desenhado pelo codigo.
+   Isso elimina dependencia de arquivos externos e mostra
+   dominio das funcoes graficas do Pygame.
+
+P: "Como funciona a colisao?"
+R: Cada objeto tem um retangulo invisivel (hitbox). O Pygame
+   checa se dois retangulos se sobrepoem com colliderect().
+
+P: "O que e o game loop?"
+R: E o ciclo principal do jogo — le input, atualiza logica,
+   desenha na tela, repete. Roda 60 vezes por segundo.
+
+P: "Como as fases se conectam com a ODS 6?"
+R: Cada fase representa um pilar: Fase 1 e despoluicao,
+   Fase 2 e infraestrutura hidrica, Fase 3 e distribuicao
+   de agua. Entre as fases, mostramos dados reais.
+
+P: "O que e Pygame?"
+R: E uma biblioteca open-source de Python pra criar jogos.
+   Cuida da parte grafica, som, e entrada do teclado.
+   Site oficial: pygame.org
+
+P: "Como o personagem pula?"
+R: Simulacao de gravidade. Quando pula, recebe velocidade
+   negativa (pra cima). A cada frame, a gravidade soma
+   velocidade positiva (pra baixo), criando o arco do pulo.
+
+
+================================================================
+  RESUMO FINAL
+================================================================
+
+O jogo Hero of the Water:
+- E feito em Python com Pygame
+- Tem 3 fases baseadas nos pilares da ODS 6
+- Usa programacao orientada a objetos
+- Tem arte procedural (sem arquivos de imagem)
+- Tem fisica simulada (gravidade, pulo)
+- Mostra fatos reais sobre a crise da agua
+- Roda em qualquer computador com Python instalado

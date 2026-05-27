@@ -1,0 +1,68 @@
+========================================
+  HERO OF THE WATER - Como Rodar o Jogo
+========================================
+
+PASSO 1: Instalar Python
+-------------------------
+Se ainda nao tem Python instalado:
+- Acesse: https://www.python.org/downloads/
+- Baixe a versao mais recente (3.12+)
+- Na instalacao, MARQUE a opcao "Add Python to PATH" (muito importante!)
+- Clique em "Install Now"
+
+PASSO 2: Instalar Pygame
+-------------------------
+Abra o Prompt de Comando (CMD) ou Terminal e digite:
+
+    pip install pygame
+
+Espere instalar. Quando terminar, esta pronto.
+
+PASSO 3: Rodar o Jogo
+----------------------
+Opcao A (mais facil):
+- De dois cliques no arquivo "hero_of_the_water.py"
+
+Opcao B (pelo terminal):
+- Abra o terminal na pasta do jogo
+- Digite: python hero_of_the_water.py
+
+========================================
+  CONTROLES DO JOGO
+========================================
+
+MOVER:       Setas (ou WASD)
+PULAR:       Espaco (ou W / Seta pra cima)
+INTERAGIR:   E (coletar lixo, consertar cano, entregar agua)
+INICIAR:     Enter
+SAIR:        Esc
+
+========================================
+  AS 3 FASES
+========================================
+
+FASE 1 - Limpar o Rio
+  Samuel precisa coletar todo o lixo do rio poluido.
+  Chegue perto do lixo e pressione E.
+  Cuidado com as pocas de poluicao!
+
+FASE 2 - Consertar Vazamentos
+  Encontre os canos quebrados pela cidade.
+  Fique perto do cano e SEGURE E para consertar.
+  Cuidado com os jatos de agua!
+
+FASE 3 - Distribuir Agua
+  Leve agua limpa para as casas da comunidade.
+  Chegue perto da casa e pressione E.
+  Colete gotas de agua para reabastecer!
+
+========================================
+  SOBRE O PROJETO
+========================================
+
+Jogo educativo baseado na ODS 6 (Agua Limpa e Saneamento)
+Disciplina: Analise e Desenvolvimento de Sistemas
+Equipe: Filipe Henry, Andre de Lira, Julio Sergio, Joao Victor, Edmilson Neto
+
+Entre as fases, o jogo mostra fatos reais sobre a crise da agua
+no Brasil e no mundo, conectando a gameplay com a ODS 6.

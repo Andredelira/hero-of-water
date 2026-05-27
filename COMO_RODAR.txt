@@ -1,0 +1,108 @@
+====================================================
+  HERO OF THE WATER v5.0
+  Como rodar o jogo no seu computador
+====================================================
+
+REQUISITOS:
+  - Windows 10 ou 11
+  - Python 3.10 ou superior (recomendado: 3.12)
+  - Biblioteca Pygame
+
+----------------------------------------------------
+PASSO A PASSO
+----------------------------------------------------
+
+1. INSTALAR O PYTHON
+
+   a) Abra o navegador e acesse: https://www.python.org/downloads/
+   b) Clique no botao amarelo "Download Python 3.12.x"
+   c) Execute o instalador que foi baixado
+   d) IMPORTANTE: Na primeira tela do instalador, marque a caixinha
+      "Add Python to PATH" (embaixo, antes de clicar Install)
+   e) Clique em "Install Now" e espere terminar
+   f) Clique em "Close"
+
+   Para verificar se instalou certo:
+   - Abra o Prompt de Comando (tecle Windows + R, digite cmd, Enter)
+   - Digite: python --version
+   - Deve aparecer algo como: Python 3.12.10
+   - Se aparecer erro, reinicie o computador e tente de novo
+
+
+2. INSTALAR O PYGAME
+
+   No Prompt de Comando (mesmo que abriu acima), digite:
+
+   pip install pygame
+
+   Espere baixar e instalar. Quando terminar, vai aparecer
+   "Successfully installed pygame-2.x.x"
+
+   Se der erro de permissao, tente:
+
+   pip install pygame --user
+
+
+3. RODAR O JOGO
+
+   Opcao A - Clique duplo (mais facil):
+   - Va ate a pasta do jogo (onde esta o arquivo hero_of_the_water.py)
+   - De dois cliques no arquivo hero_of_the_water.py
+   - O jogo abre em tela cheia
+
+   Opcao B - Pelo Prompt de Comando:
+   - Abra o Prompt de Comando
+   - Navegue ate a pasta do jogo. Exemplo:
+     cd C:\Users\SeuUsuario\Desktop\hero-of-the-water
+   - Digite:
+     python hero_of_the_water.py
+   - O jogo abre em tela cheia
+
+
+4. CONTROLES DO JOGO
+
+   Setas / WASD       - Mover o Samuel
+   Espaco / W / Seta   - Pular
+   E                    - Interagir (coletar, consertar, entregar)
+   Clique direito       - Lancar rede (Fase 1)
+   M                    - Mutar/desmutar som
+   ESC                  - Menu / Sair
+
+
+5. SE DER ERRO
+
+   Erro: "python nao e reconhecido como comando"
+   -> Reinstale o Python marcando "Add Python to PATH"
+   -> Ou reinicie o computador depois de instalar
+
+   Erro: "No module named 'pygame'"
+   -> Abra o cmd e digite: pip install pygame
+   -> Se tiver mais de um Python: python -m pip install pygame
+
+   Tela preta ou travou:
+   -> Aperte Alt+F4 pra fechar
+   -> Tente rodar pela Opcao B (Prompt de Comando) pra ver a mensagem de erro
+
+   Jogo muito lento:
+   -> Feche outros programas
+   -> O jogo roda em 960x640 a 60fps, qualquer computador recente aguenta
+
+
+6. ARQUIVOS DO JOGO
+
+   hero_of_the_water.py   - O jogo (arquivo principal)
+   music_menu.wav         - Musica do menu
+   music_phase1.wav       - Musica da fase 1
+   music_phase2.wav       - Musica da fase 2
+   music_phase3.wav       - Musica da fase 3
+   music_phase4.wav       - Musica da fase 4
+   music_phase5.wav       - Musica da fase 5
+
+   Os arquivos .wav de musica sao opcionais. Se nao tiverem na pasta,
+   o jogo gera musica automaticamente (chiptune).
+
+
+=============================================================
+                     Equipe ADS 2026
+  Filipe Henry - André de Lira - Júlio Sérgio - João Victor 
+=============================================================
