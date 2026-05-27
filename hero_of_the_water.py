@@ -5797,12 +5797,7 @@ def main():
                         PHASE_MESSAGES[phase_idx], score, stars, time_taken,
                         ODS6_FACTS[phase_idx]
                     )
-                    if phase_idx == 3:
-                        # Última fase — tela de vitória
-                        victory_screen()
-                        state = "select"
-                    else:
-                        state = "select"
+                    state = "select"
 
                 elif result == "dead":
                     # Jogador morreu — comportamento varia conforme dificuldade
